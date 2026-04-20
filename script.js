@@ -26,6 +26,7 @@ let globalPieceToggles = {};
 let globalTargetToggles = {};
 let globalModeWinning = false;
 let globalModeComprehensive = false;
+let globalModeTrivial = false;
 
 const initToggles = () => {
     const files = ['a','b','c','d','e','f','g','h'];
@@ -262,31 +263,35 @@ function renderBoard() {
       const wCov = coverageMap.w[square] || 0;
       const bCov = coverageMap.b[square] || 0;
       
-      if (globalModeWinning) {
-          if (wCov > bCov) sqEl.classList.add('winning-w');
-          else if (bCov > wCov) sqEl.classList.add('winning-b');
-      }
+      const isTrivial = globalModeTrivial && ((wCov + bCov) <= 1);
       
-      if (globalTargetToggles[square] && (wCov > 0 || bCov > 0)) {
-        const covEl = document.createElement('div');
-        covEl.className = 'coverage-display';
-        
-        if (wCov > 0) {
-           const dot = document.createElement('div');
-           dot.className = 'coverage-dot';
-           dot.textContent = wCov;
-           dot.style.backgroundColor = whiteColors[Math.min(wCov - 1, 4)];
-           covEl.appendChild(dot);
-        }
-        if (bCov > 0) {
-           const dot = document.createElement('div');
-           dot.className = 'coverage-dot';
-           dot.textContent = bCov;
-           dot.style.backgroundColor = blackColors[Math.min(bCov - 1, 4)];
-           covEl.appendChild(dot);
-        }
-        
-        sqEl.appendChild(covEl);
+      if (!isTrivial) {
+          if (globalModeWinning) {
+              if (wCov > bCov) sqEl.classList.add('winning-w');
+              else if (bCov > wCov) sqEl.classList.add('winning-b');
+          }
+          
+          if (globalTargetToggles[square] && (wCov > 0 || bCov > 0)) {
+            const covEl = document.createElement('div');
+            covEl.className = 'coverage-display';
+            
+            if (wCov > 0) {
+               const dot = document.createElement('div');
+               dot.className = 'coverage-dot';
+               dot.textContent = wCov;
+               dot.style.backgroundColor = whiteColors[Math.min(wCov - 1, 4)];
+               covEl.appendChild(dot);
+            }
+            if (bCov > 0) {
+               const dot = document.createElement('div');
+               dot.className = 'coverage-dot';
+               dot.textContent = bCov;
+               dot.style.backgroundColor = blackColors[Math.min(bCov - 1, 4)];
+               covEl.appendChild(dot);
+            }
+            
+            sqEl.appendChild(covEl);
+          }
       }
       
       // Piece
@@ -537,6 +542,11 @@ document.getElementById('mode-winning')?.addEventListener('change', (e) => {
 
 document.getElementById('mode-comprehensive')?.addEventListener('change', (e) => {
     globalModeComprehensive = e.target.checked;
+    renderBoard();
+});
+
+document.getElementById('mode-trivial')?.addEventListener('change', (e) => {
+    globalModeTrivial = e.target.checked;
     renderBoard();
 });
 
