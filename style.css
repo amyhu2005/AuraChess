@@ -1,0 +1,440 @@
+:root {
+  --bg-color: #020617;
+  --gradient-1: #1e293b;
+  --gradient-2: #0f172a;
+  
+  --panel-bg: rgba(30, 41, 59, 0.6);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  
+  --board-light: #cbd5e1;
+  --board-dark: #475569;
+  
+  --highlight-valid: radial-gradient(circle, rgba(16, 185, 129, 0.5) 20%, transparent 22%);
+  --highlight-capture: radial-gradient(circle, transparent 0%, transparent 60%, rgba(239, 68, 68, 0.5) 60%, rgba(239, 68, 68, 0.5) 100%);
+  --selected-color: rgba(56, 189, 248, 0.6);
+  --last-move-color: rgba(139, 92, 246, 0.4);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-secondary: rgba(255, 255, 255, 0.1);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.2);
+  
+  --board-max-size: 700px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top left, var(--gradient-1), var(--bg-color), var(--gradient-2));
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Board Styling */
+.board-wrapper {
+  flex: 1 1 auto;
+  max-width: var(--board-max-size);
+  width: 100%;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  border: 4px solid var(--panel-bg);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chessboard {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  /* We will rotate the board container when flipped, but we also have to rotate the pieces back! */
+}
+
+.square {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(20px, 5vw, 60px);
+}
+
+.square.light {
+  background-color: var(--board-light);
+  color: var(--board-dark);
+}
+
+.square.dark {
+  background-color: var(--board-dark);
+  color: var(--board-light);
+}
+
+/* Overlay highlights */
+.square::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.square.selected::after {
+  background-color: var(--selected-color);
+}
+
+.square.last-move::after {
+  background-color: var(--last-move-color);
+}
+
+.square.valid-move::after {
+  background: var(--highlight-valid);
+}
+
+.square.valid-capture::after {
+  background: var(--highlight-capture);
+}
+
+/* Coordinate labels */
+.coord {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.coord.rank {
+  top: 2px;
+  left: 2px;
+}
+
+.coord.file {
+  bottom: 2px;
+  right: 2px;
+}
+
+/* Piece Styling */
+.piece {
+  width: 90%;
+  height: 90%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: grab;
+  z-index: 10;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  user-select: none;
+  -webkit-user-drag: element;
+}
+
+.piece:active {
+  cursor: grabbing;
+}
+
+.piece.dragging {
+  opacity: 0; /* Hide original when dragging */
+}
+
+/* Side Panel Info */
+.glass-card {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.side-panel {
+  flex: 0 1 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.25rem;
+}
+
+.panel-header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Turn Status */
+.status-box {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.status-value {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.turn-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+}
+
+.white-turn .turn-dot {
+  background-color: #f8fafc;
+  box-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+.black-turn .turn-dot {
+  background-color: #0f172a;
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  border-color: #475569;
+}
+
+.game-state {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-btn {
+  background-color: var(--btn-primary);
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: var(--btn-primary-hover);
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background-color: var(--btn-secondary);
+  color: var(--text-primary);
+}
+
+.secondary-btn:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+.spinning .flip-icon {
+  animation: spin 0.6s ease;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(180deg); }
+}
+
+/* History */
+.move-history-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 200px;
+}
+
+.move-history-container h3 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.move-history {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-y: auto;
+  max-height: 250px;
+  display: grid;
+  grid-template-columns: 2fr 3fr 3fr;
+  align-content: start;
+  row-gap: 4px;
+}
+
+.move-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.move-history::-webkit-scrollbar-thumb {
+  background: var(--btn-secondary-hover);
+  border-radius: 4px;
+}
+
+.history-turn {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 0.25rem;
+}
+
+.history-move {
+  font-family: monospace;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.history-move:hover {
+  background: var(--btn-secondary);
+}
+
+/* Coverage Settings */
+.coverage-toggles-container {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.coverage-toggles-container h3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.toggles-grid {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.toggle-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.toggle-col h4 {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.toggle-col label {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+/* Coverage Dots */
+.coverage-display {
+  position: absolute;
+  top: 4px; /* Placing at top right since piece is usually bottom heavy */
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.coverage-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: transparent;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  cursor: help;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.coverage-dot:hover {
+  color: white;
+  transform: scale(1.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 800px) {
+  .app-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .side-panel {
+    width: 100%;
+    flex: auto;
+  }
+}

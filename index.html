@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Chess - Plan Your Moves</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+  
+  <div class="app-container">
+    <div class="board-wrapper">
+      <!-- Ranks/Files Coordinates will be injected or overlaid -->
+      <div id="chessboard" class="chessboard"></div>
+    </div>
+    
+    <div class="side-panel glass-card">
+      <div class="panel-header">
+        <h1>Aura Chess</h1>
+        <p>Strategic Move Planner</p>
+      </div>
+
+      <div class="status-box">
+        <span class="status-label">Turn</span>
+        <div id="status-indicator" class="status-value white-turn">
+          <div class="turn-dot"></div>
+          <span id="turn-text">White to move</span>
+        </div>
+        <p id="game-state-text" class="game-state">Game in progress</p>
+      </div>
+
+      <div class="controls">
+        <button id="flip-board-btn" class="btn primary-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flip-icon"><path d="M21 2v6h-6"/><path d="M21 13a9 9 0 1 1-3-7.7L21 8"/><path d="M3 22v-6h6"/><path d="M3 11a9 9 0 1 1 3 7.7L3 16"/></svg>
+          Flip Board
+        </button>
+        <button id="reset-board-btn" class="btn secondary-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset Game
+        </button>
+      </div>
+
+      <div class="coverage-toggles-container class-overlay">
+        <h3>Coverage Settings</h3>
+        <div class="toggles-grid">
+          <div class="toggle-col" id="white-toggles-container">
+            <h4 style="color: #60a5fa">White</h4>
+          </div>
+          <div class="toggle-col" id="black-toggles-container">
+            <h4 style="color: #f87171">Black</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="move-history-container">
+        <h3>Move History</h3>
+        <div id="move-history" class="move-history">
+          <!-- Move list will populate here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
