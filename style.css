@@ -48,7 +48,7 @@ body {
   flex-direction: row;
   gap: 2rem;
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1600px;
   width: 100%;
   align-items: flex-start;
   justify-content: center;
@@ -176,7 +176,7 @@ body {
 }
 
 .side-panel {
-  flex: 0 1 350px;
+  flex: 0 1 330px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
