@@ -190,20 +190,36 @@ function getAttackedSquares(f, r, type, color, boardState) {
               const blocker = boardState[cr][cf];
               const isOrthogonal = (v[0] === 0 || v[1] === 0);
               const isDiagonal = (Math.abs(v[0]) === Math.abs(v[1]));
-              let transmits = false;
-              switch(blocker.type) {
-                  case 'q': transmits = true; break;
-                  case 'r': transmits = isOrthogonal; break;
-                  case 'b': transmits = isDiagonal; break;
-                  case 'k': transmits = true; break;
-                  case 'n': transmits = false; break;
-                  case 'p': 
-                      if (isDiagonal) {
-                          transmits = (blocker.color === 'w') ? (v[1] === -1) : (v[1] === 1);
-                      }
-                      break;
+              
+              let transmitsContinuously = false;
+              let transmitsOnceIfEnemy = false;
+
+              if (blocker.type === 'q') transmitsContinuously = true;
+              else if (blocker.type === 'r' && isOrthogonal) transmitsContinuously = true;
+              else if (blocker.type === 'b' && isDiagonal) transmitsContinuously = true;
+              else if (blocker.type === 'p' && isDiagonal && blocker.color === color) {
+                  const isForward = (color === 'w') ? (v[1] === -1) : (v[1] === 1);
+                  if (isForward) {
+                      transmitsOnceIfEnemy = true;
+                  }
               }
-              if (!transmits) break;
+
+              if (transmitsContinuously) {
+                  // Keep slicing through
+              } else if (transmitsOnceIfEnemy) {
+                  // Check exactly one square ahead for an enemy piece target
+                  let nf = cf + v[0];
+                  let nr = cr + v[1];
+                  if (nf >= 0 && nf <= 7 && nr >= 0 && nr <= 7) {
+                      const nextPiece = boardState[nr][nf];
+                      if (nextPiece && nextPiece.color !== color) {
+                          targets.push(files[nf] + (8 - nr));
+                      }
+                  }
+                  break; // Always break after pawn evaluation
+              } else {
+                  break;
+              }
           }
       }
       if (type === 'n' || type === 'k') break;
