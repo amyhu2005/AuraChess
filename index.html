@@ -19,9 +19,14 @@
     </div>
     
     <div class="side-panel glass-card">
-      <div class="panel-header">
-        <h1>Aura Chess</h1>
-        <p>Strategic Move Planner</p>
+      <div class="panel-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h1>Aura Chess</h1>
+          <p>Strategic Move Planner</p>
+        </div>
+        <button id="info-btn" class="btn secondary-btn" style="border-radius: 50%; padding: 0; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1rem;" title="How to play">
+          ?
+        </button>
       </div>
 
       <div class="status-box">
@@ -74,15 +79,15 @@
         <h3>Visualization Modes</h3>
         <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.8rem;">
           <label class="mode-toggle">
-            <input type="checkbox" id="mode-winning"> 
+            <input type="checkbox" id="mode-winning" checked> 
             <span>Winning Square Overlay</span>
           </label>
           <label class="mode-toggle">
-            <input type="checkbox" id="mode-comprehensive"> 
+            <input type="checkbox" id="mode-comprehensive" checked> 
             <span>Comprehensive X-Ray</span>
           </label>
           <label class="mode-toggle">
-            <input type="checkbox" id="mode-trivial"> 
+            <input type="checkbox" id="mode-trivial" checked> 
             <span>Filter Trivial Dominance</span>
           </label>
         </div>
@@ -93,6 +98,30 @@
         <div id="move-history" class="move-history">
           <!-- Move list will populate here -->
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="info-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h2>Welcome to Aura Chess</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h3>What is Aura Chess?</h3>
+        <p>Aura Chess is an advanced strategic move planner designed to visualize board control and overlapping piece dominance rather than just standard valid moves.</p>
+        
+        <h3>Visualization Modes</h3>
+        <ul>
+          <li><strong>Winning Square Overlay:</strong> Shades a physical tile Blue if White pieces exert heavier absolute firepower over it, and Red if Black is dominating it.</li>
+          <li><strong>Comprehensive X-Ray:</strong> Standard chess vision stops at the first piece. <em>X-Ray</em> mode allows sliding pieces (Queens, Rooks, Bishops) to pierce straight through solid matter, revealing true battery pressure behind both enemy and friendly lines.</li>
+          <li><strong>Filter Trivial Dominance:</strong> Suppresses coverage dot tracking for any square covered by only ONE piece total, visually wiping away "obvious" noise to help you isolate dynamically contested hotspots across the board.</li>
+        </ul>
+
+        <h3>Granular Filters</h3>
+        <p><strong>Source Pieces:</strong> Use the piece list to selectively disable specific active pieces to remove their vectors strictly from coverage calculations.</p>
+        <p><strong>Target Squares:</strong> Use the interactive 8x8 minimap to isolate specific focus zones—only squares highlighted "ON" in the minimap will display their dense attacker loadouts!</p>
       </div>
     </div>
   </div>

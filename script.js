@@ -24,9 +24,9 @@ const PIECE_URLS = {
 
 let globalPieceToggles = {};
 let globalTargetToggles = {};
-let globalModeWinning = false;
-let globalModeComprehensive = false;
-let globalModeTrivial = false;
+let globalModeWinning = true;
+let globalModeComprehensive = true;
+let globalModeTrivial = true;
 
 const initToggles = () => {
     const files = ['a','b','c','d','e','f','g','h'];
@@ -548,6 +548,21 @@ document.getElementById('mode-comprehensive')?.addEventListener('change', (e) =>
 document.getElementById('mode-trivial')?.addEventListener('change', (e) => {
     globalModeTrivial = e.target.checked;
     renderBoard();
+});
+
+// Modal Logic
+document.getElementById('info-btn')?.addEventListener('click', () => {
+    document.getElementById('info-modal').classList.remove('hidden');
+});
+
+document.getElementById('close-modal-btn')?.addEventListener('click', () => {
+    document.getElementById('info-modal').classList.add('hidden');
+});
+
+document.getElementById('info-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'info-modal') {
+        document.getElementById('info-modal').classList.add('hidden');
+    }
 });
 
 // Init
