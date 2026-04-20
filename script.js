@@ -24,6 +24,8 @@ const PIECE_URLS = {
 
 let globalPieceToggles = {};
 let globalTargetToggles = {};
+let globalModeWinning = false;
+let globalModeComprehensive = false;
 
 const initToggles = () => {
     const files = ['a','b','c','d','e','f','g','h'];
@@ -180,7 +182,9 @@ function getAttackedSquares(f, r, type, color, boardState) {
       cr += v[1];
       if (cf < 0 || cf > 7 || cr < 0 || cr > 7) break;
       targets.push(files[cf] + (8 - cr));
-      if (boardState[cr][cf]) break;
+      if (boardState[cr][cf]) {
+          if (!globalModeComprehensive) break;
+      }
       if (type === 'n' || type === 'k') break;
     }
   });
@@ -257,6 +261,11 @@ function renderBoard() {
       // Coverage Display
       const wCov = coverageMap.w[square] || 0;
       const bCov = coverageMap.b[square] || 0;
+      
+      if (globalModeWinning) {
+          if (wCov > bCov) sqEl.classList.add('winning-w');
+          else if (bCov > wCov) sqEl.classList.add('winning-b');
+      }
       
       if (globalTargetToggles[square] && (wCov > 0 || bCov > 0)) {
         const covEl = document.createElement('div');
@@ -518,6 +527,16 @@ document.getElementById('btn-all-targets')?.addEventListener('click', () => {
 document.getElementById('btn-no-targets')?.addEventListener('click', () => {
     Object.keys(globalTargetToggles).forEach(k => globalTargetToggles[k] = false);
     renderTargetGrid();
+    renderBoard();
+});
+
+document.getElementById('mode-winning')?.addEventListener('change', (e) => {
+    globalModeWinning = e.target.checked;
+    renderBoard();
+});
+
+document.getElementById('mode-comprehensive')?.addEventListener('change', (e) => {
+    globalModeComprehensive = e.target.checked;
     renderBoard();
 });
 
