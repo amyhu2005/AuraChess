@@ -23,9 +23,16 @@ const PIECE_URLS = {
 };
 
 let globalPieceToggles = {};
+let globalTargetToggles = {};
 
 const initToggles = () => {
     const files = ['a','b','c','d','e','f','g','h'];
+    for(let r=1; r<=8; r++) {
+       for(let i=0; i<8; i++) {
+           globalTargetToggles[files[i] + r] = true;
+       }
+    }
+    
     for(let i=0;i<8;i++) {
         globalPieceToggles['w_p_' + files[i]] = true;
         globalPieceToggles['b_p_' + files[i]] = true;
@@ -107,6 +114,35 @@ function renderToggles() {
     
     renderList(wPieces, wContainer);
     renderList(bPieces, bContainer);
+}
+
+function renderTargetGrid() {
+    const gridEl = document.getElementById('mini-target-grid');
+    if (!gridEl) return;
+    gridEl.innerHTML = '';
+    
+    const ranks = orientation === 'w' ? [8, 7, 6, 5, 4, 3, 2, 1] : [1, 2, 3, 4, 5, 6, 7, 8];
+    const mapFiles = orientation === 'w' ? ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] : ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'];
+    
+    ranks.forEach((r, rIdx) => {
+        mapFiles.forEach((f, fIdx) => {
+            const sq = f + r;
+            const cell = document.createElement('div');
+            const isLight = (rIdx + fIdx) % 2 === 0;
+            cell.className = `mini-square ${isLight ? 'light' : 'dark'}`;
+            if (!globalTargetToggles[sq]) {
+                 cell.classList.add('off');
+            }
+            
+            cell.title = sq;
+            cell.addEventListener('click', () => {
+                globalTargetToggles[sq] = !globalTargetToggles[sq];
+                renderTargetGrid();
+                renderBoard();
+            });
+            gridEl.appendChild(cell);
+        });
+    });
 }
 
 function getAttackedSquares(f, r, type, color, boardState) {
@@ -222,7 +258,7 @@ function renderBoard() {
       const wCov = coverageMap.w[square] || 0;
       const bCov = coverageMap.b[square] || 0;
       
-      if (wCov > 0 || bCov > 0) {
+      if (globalTargetToggles[square] && (wCov > 0 || bCov > 0)) {
         const covEl = document.createElement('div');
         covEl.className = 'coverage-display';
         
@@ -267,6 +303,7 @@ function renderBoard() {
   updateStatus();
   updateHistory();
   renderToggles();
+  renderTargetGrid();
   attachEventListeners();
 }
 
@@ -471,6 +508,18 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Settings Checkboxes are handled inside renderToggles now
+
+document.getElementById('btn-all-targets')?.addEventListener('click', () => {
+    Object.keys(globalTargetToggles).forEach(k => globalTargetToggles[k] = true);
+    renderTargetGrid();
+    renderBoard();
+});
+
+document.getElementById('btn-no-targets')?.addEventListener('click', () => {
+    Object.keys(globalTargetToggles).forEach(k => globalTargetToggles[k] = false);
+    renderTargetGrid();
+    renderBoard();
+});
 
 // Init
 renderBoard();

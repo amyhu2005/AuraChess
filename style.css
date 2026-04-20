@@ -394,6 +394,40 @@ body {
   user-select: none;
 }
 
+/* Mini Grid for Target Squares */
+.mini-grid-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 160px;
+  height: 160px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mini-square {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.mini-square:hover {
+  opacity: 0.7;
+}
+
+.mini-square.off {
+  opacity: 0.15;
+}
+
+.mini-square.light { background-color: var(--board-light); }
+.mini-square.dark { background-color: var(--board-dark); }
+
 /* Coverage Dots */
 .coverage-display {
   position: absolute;
