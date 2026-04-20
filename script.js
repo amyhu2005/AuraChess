@@ -25,7 +25,7 @@ const PIECE_URLS = {
 let globalPieceToggles = {};
 let globalTargetToggles = {};
 let globalModeWinning = true;
-let globalModeComprehensive = true;
+let globalModeComprehensive = false;
 let globalModeTrivial = true;
 
 const initToggles = () => {
