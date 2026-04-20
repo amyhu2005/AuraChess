@@ -67,6 +67,24 @@
         </div>
       </div>
 
+      <div class="coverage-toggles-container class-overlay">
+        <h3>Visualization Modes</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.8rem;">
+          <label class="mode-toggle">
+            <input type="checkbox" id="mode-winning"> 
+            <span>Winning Square Overlay</span>
+          </label>
+          <label class="mode-toggle">
+            <input type="checkbox" id="mode-comprehensive"> 
+            <span>Comprehensive X-Ray</span>
+          </label>
+          <label class="mode-toggle">
+            <input type="checkbox" id="mode-trivial"> 
+            <span>Filter Trivial Dominance</span>
+          </label>
+        </div>
+      </div>
+
       <div class="move-history-container">
         <h3>Move History</h3>
         <div id="move-history" class="move-history">
@@ -74,22 +92,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="bottom-bar glass-card">
-    <div class="bar-title">Visualization Modes:</div>
-    <label class="mode-toggle">
-      <input type="checkbox" id="mode-winning"> 
-      <span>Winning Square Overlay</span>
-    </label>
-    <label class="mode-toggle">
-      <input type="checkbox" id="mode-comprehensive"> 
-      <span>Comprehensive X-Ray</span>
-    </label>
-    <label class="mode-toggle">
-      <input type="checkbox" id="mode-trivial"> 
-      <span>Filter Trivial Dominance</span>
-    </label>
   </div>
 
   <script src="script.js"></script>
