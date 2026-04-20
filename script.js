@@ -184,7 +184,27 @@ function getAttackedSquares(f, r, type, color, boardState) {
       if (cf < 0 || cf > 7 || cr < 0 || cr > 7) break;
       targets.push(files[cf] + (8 - cr));
       if (boardState[cr][cf]) {
-          if (!globalModeComprehensive) break;
+          if (!globalModeComprehensive) {
+              break;
+          } else {
+              const blocker = boardState[cr][cf];
+              const isOrthogonal = (v[0] === 0 || v[1] === 0);
+              const isDiagonal = (Math.abs(v[0]) === Math.abs(v[1]));
+              let transmits = false;
+              switch(blocker.type) {
+                  case 'q': transmits = true; break;
+                  case 'r': transmits = isOrthogonal; break;
+                  case 'b': transmits = isDiagonal; break;
+                  case 'k': transmits = true; break;
+                  case 'n': transmits = false; break;
+                  case 'p': 
+                      if (isDiagonal) {
+                          transmits = (blocker.color === 'w') ? (v[1] === -1) : (v[1] === 1);
+                      }
+                      break;
+              }
+              if (!transmits) break;
+          }
       }
       if (type === 'n' || type === 'k') break;
     }
