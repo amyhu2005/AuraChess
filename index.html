@@ -110,18 +110,28 @@
       </div>
       <div class="modal-body">
         <h3>What is Aura Chess?</h3>
-        <p>Aura Chess is an advanced strategic move planner designed to visualize board control and overlapping piece dominance rather than just standard valid moves.</p>
-        
-        <h3>Visualization Modes</h3>
+        <p>Aura Chess is a visual tool designed to help you develop chess tactics by showing exactly which squares are being dominated by which player. Rather than just showing legal moves, it maps board control and piece influence to help you quickly identify underlying strategies.</p>
+
+        <h3>Hover Analytics & Rendering</h3>
         <ul>
-          <li><strong>Winning Square Overlay:</strong> Shades a physical tile Blue if White pieces exert heavier absolute firepower over it, and Red if Black is dominating it.</li>
-          <li><strong>Comprehensive X-Ray:</strong> Calculates true "Battery" potential! Sliding pieces perfectly pierce through blocking pieces that share their exact mathematical attack trajectory (e.g., a Queen stationed behind a Rook extends power indefinitely). Friendly pawns natively act as finite x-ray lenses—they seamlessly transmit your structural support exactly one square diagonally forward only when attacking a physical enemy.</li>
-          <li><strong>Filter Trivial Dominance:</strong> Suppresses coverage dot tracking for any square covered by only ONE piece total, visually wiping away "obvious" noise to help you isolate dynamically contested hotspots across the board.</li>
+          <li><strong>Hover Coverage Diagnostics:</strong> Hover over any active square to see a small badge (e.g., <code>(W2|B3)</code>) that displays exactly how many White vs. Black pieces are currently attacking or defending that specific square.</li>
+          <li><strong>Winning Square Overlays:</strong> Evaluates total board control. Squares are softly highlighted with a translucent Blue overlay if White has more pieces covering them, or Red if Black has the numerical advantage. Ties remain naturally blank.</li>
         </ul>
 
-        <h3>Granular Filters</h3>
-        <p><strong>Source Pieces:</strong> Use the piece list to selectively disable specific active pieces to remove their vectors strictly from coverage calculations.</p>
-        <p><strong>Target Squares:</strong> Use the interactive 8x8 minimap to isolate specific focus zones—only squares highlighted "ON" in the minimap will display their dense attacker loadouts!</p>
+        <h3>Visualization Modes</h3>
+        <ul>
+          <li><strong>Comprehensive X-Ray:</strong> Visualizes true "battery" potential. Sliding pieces (Queens, Rooks, Bishops) will intelligently show their influence through blocking pieces that share the same trajectory. Friendly pawns also transmit battery support exactly one square forward to highlight potential capture protection.</li>
+          <li><strong>Filter Trivial Dominance:</strong> A smart filter designed to reduce visual noise. If a square is exclusively controlled by one player and completely uncontested, its overlays disappear so you can focus strictly on battlegrounds. <strong>Exception:</strong> If an undefended "hanging" piece sits on that square, it remains highlighted to alert you of the tactical opportunity or blunder!</li>
+        </ul>
+
+        <h3>Granular Control</h3>
+        <ul>
+          <li><strong>Source Pieces Filter:</strong> Uncheck specific pieces in the sidebar to instantly strip their influence from the total calculations, letting you isolate specific tactical setups.</li>
+          <li><strong>Target Squares Minimap:</strong> Use the interactive 8x8 minimap to focus strictly on certain areas of the board. Only squares toggled <strong>ON</strong> (Green) will participate in the analytics.</li>
+        </ul>
+
+        <h3>Movement</h3>
+        <p>You can drag-and-drop pieces or click squares to make standard chess moves. The board records your history natively, meaning you can easily use your keyboard's <strong>Left Arrow</strong> and <strong>Right Arrow</strong> keys to step backward and forward through your gameplay.</p>
       </div>
     </div>
   </div>
