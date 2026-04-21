@@ -238,7 +238,7 @@ function getAttackedSquares(f, r, type, color, boardState) {
 const pieceValues = { 'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 1000 };
 
 function checkPinStatus(boardState) {
-    let pinnedSquares = {};
+    let pinnedConstraints = {};
     const files = ['a','b','c','d','e','f','g','h'];
     for (let r = 0; r < 8; r++) {
         for (let f = 0; f < 8; f++) {
@@ -248,11 +248,13 @@ function checkPinStatus(boardState) {
             const colorB = pieceB.color;
             const valB = pieceValues[pieceB.type];
             let isPinned = false;
+            let currentConstraint = null;
             
             const allDirs = [...dirs['r'], ...dirs['b']];
             for (let d of allDirs) {
                 let hasEnemySlider = false;
                 let cf = f; let cr = r;
+                let enemyPos = null;
                 while (true) {
                     cf += d[0]; cr += d[1];
                     if (cf < 0 || cf > 7 || cr < 0 || cr > 7) break;
@@ -263,6 +265,7 @@ function checkPinStatus(boardState) {
                             else if (p.type === 'r' && (d[0] === 0 || d[1] === 0)) hasEnemySlider = true;
                             else if (p.type === 'b' && Math.abs(d[0]) === Math.abs(d[1])) hasEnemySlider = true;
                         }
+                        if (hasEnemySlider) enemyPos = {f: cf, r: cr};
                         break;
                     }
                 }
@@ -270,26 +273,46 @@ function checkPinStatus(boardState) {
                 if (hasEnemySlider) {
                     let opDr = [-d[0], -d[1]];
                     let cf2 = f; let cr2 = r;
+                    let hasFriendlyBehind = false;
                     while (true) {
                         cf2 += opDr[0]; cr2 += opDr[1];
                         if (cf2 < 0 || cf2 > 7 || cr2 < 0 || cr2 > 7) break;
                         const p2 = boardState[cr2][cf2];
                         if (p2) {
                             if (p2.color === colorB && pieceValues[p2.type] > valB) {
-                                isPinned = true;
+                                hasFriendlyBehind = true;
                             }
                             break;
                         }
                     }
+                    if (hasFriendlyBehind) {
+                        isPinned = true;
+                        currentConstraint = [];
+                        
+                        let tf = f + d[0]; let tr = r + d[1];
+                        while(true) {
+                            currentConstraint.push(files[tf] + (8 - tr));
+                            if (tf === enemyPos.f && tr === enemyPos.r) break;
+                            tf += d[0]; tr += d[1];
+                        }
+                        
+                        tf = f - d[0]; tr = r - d[1];
+                        while(true) {
+                            if (tf < 0 || tf > 7 || tr < 0 || tr > 7) break;
+                            if (boardState[tr][tf]) break;
+                            currentConstraint.push(files[tf] + (8 - tr));
+                            tf -= d[0]; tr -= d[1];
+                        }
+                        break;
+                    }
                 }
-                if (isPinned) break;
             }
             if (isPinned) {
-                pinnedSquares[files[f] + (8 - r)] = true;
+                pinnedConstraints[files[f] + (8 - r)] = currentConstraint;
             }
         }
     }
-    return pinnedSquares;
+    return pinnedConstraints;
 }
 
 function calculateCoverage() {
@@ -309,9 +332,14 @@ function calculateCoverage() {
       const id = map[sq];
       
       if (!globalPieceToggles[id]) continue;
-      if (pinnedSquares[sq]) continue;
       
-      const targets = getAttackedSquares(f, r, piece.type, piece.color, boardState);
+      let targets = getAttackedSquares(f, r, piece.type, piece.color, boardState);
+      
+      if (pinnedSquares[sq]) {
+          const allowedLine = pinnedSquares[sq];
+          targets = targets.filter(t => allowedLine.includes(t));
+      }
+      
       targets.forEach(t => {
         if (!coverage[piece.color][t]) coverage[piece.color][t] = 0;
         coverage[piece.color][t]++;
