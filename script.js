@@ -525,6 +525,45 @@ document.getElementById('reset-board-btn').addEventListener('click', () => {
   renderBoard();
 });
 
+document.getElementById('import-btn')?.addEventListener('click', () => {
+  const inputEl = document.getElementById('import-input');
+  const val = inputEl.value.trim();
+  if (!val) return;
+
+  let success = false;
+  // Try mapping as FEN first
+  if (chess.load(val)) {
+    success = true;
+  } else {
+    // Try mapping as PGN
+    if (chess.load_pgn(val)) {
+      success = true;
+    }
+  }
+
+  if (success) {
+    lastMove = null;
+    selectedSquare = null;
+    forwardQueue = [];
+    
+    // Attempt to reconstruct history marker if it was a PGN payload
+    const history = chess.history({ verbose: true });
+    if (history.length > 0) {
+      lastMove = history[history.length - 1];
+    }
+    
+    renderBoard();
+    inputEl.value = '';
+    inputEl.placeholder = "Loaded Successfully!";
+    setTimeout(() => { inputEl.placeholder = "Paste PGN or FEN..."; }, 2500);
+  } else {
+    inputEl.value = '';
+    const oldPh = inputEl.placeholder;
+    inputEl.placeholder = "Invalid Format Error";
+    setTimeout(() => { inputEl.placeholder = oldPh; }, 2500);
+  }
+});
+
 // Keyboard Navigation
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
