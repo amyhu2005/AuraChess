@@ -46,15 +46,21 @@ const initToggles = () => {
 };
 initToggles();
 
+let customBaseMap = null;
+
 function getPieceTrackingMap() {
     let map = {};
-    const files = ['a','b','c','d','e','f','g','h'];
-    for(let i=0;i<8;i++) {
-        map[files[i]+'2'] = 'w_p_' + files[i];
-        map[files[i]+'7'] = 'b_p_' + files[i];
+    if (customBaseMap) {
+        map = { ...customBaseMap };
+    } else {
+        const files = ['a','b','c','d','e','f','g','h'];
+        for(let i=0;i<8;i++) {
+            map[files[i]+'2'] = 'w_p_' + files[i];
+            map[files[i]+'7'] = 'b_p_' + files[i];
+        }
+        map['a1']='w_r_a'; map['b1']='w_n_b'; map['c1']='w_b_c'; map['d1']='w_q'; map['e1']='w_k'; map['f1']='w_b_f'; map['g1']='w_n_g'; map['h1']='w_r_h';
+        map['a8']='b_r_a'; map['b8']='b_n_b'; map['c8']='b_b_c'; map['d8']='b_q'; map['e8']='b_k'; map['f8']='b_b_f'; map['g8']='b_n_g'; map['h8']='b_r_h';
     }
-    map['a1']='w_r_a'; map['b1']='w_n_b'; map['c1']='w_b_c'; map['d1']='w_q'; map['e1']='w_k'; map['f1']='w_b_f'; map['g1']='w_n_g'; map['h1']='w_r_h';
-    map['a8']='b_r_a'; map['b8']='b_n_b'; map['c8']='b_b_c'; map['d8']='b_q'; map['e8']='b_k'; map['f8']='b_b_f'; map['g8']='b_n_g'; map['h8']='b_r_h';
     
     const history = chess.history({verbose: true});
     for(let move of history) {
@@ -583,42 +589,52 @@ document.getElementById('reset-board-btn').addEventListener('click', () => {
   selectedSquare = null;
   orientation = 'w';
   forwardQueue = [];
+  customBaseMap = null;
+  initToggles();
   renderBoard();
 });
 
 document.getElementById('import-btn')?.addEventListener('click', () => {
   const inputEl = document.getElementById('import-input');
-  let val = inputEl.value.trim();
-  const rawOriginal = val;
+  const val = inputEl.value.trim();
   if (!val) return;
 
-  let success = false;
+  let successFen = false;
+  let successPgn = false;
   
-  if (!val.includes('[') && !val.includes('1.')) {
-      const parts = val.split(/\s+/);
-      if (parts.length === 1) val += ' w KQkq - 0 1';
-      else if (parts.length === 2) val += ' KQkq - 0 1';
-      else if (parts.length === 3) val += ' - 0 1';
-      else if (parts.length === 4) val += ' 0 1';
-      else if (parts.length === 5) val += ' 1';
-  }
-
-  // Try mapping as FEN first
   if (chess.load(val)) {
-    success = true;
-  } else {
-    // Try mapping as PGN
-    if (chess.load_pgn(rawOriginal) || chess.load_pgn(val)) {
-      success = true;
-    }
+    successFen = true;
+  } else if (chess.load_pgn(val)) {
+    successPgn = true;
   }
 
-  if (success) {
+  if (successFen || successPgn) {
+    if (successFen) {
+        customBaseMap = {};
+        globalPieceToggles = {};
+        const board = chess.board();
+        const files = ['a','b','c','d','e','f','g','h'];
+        for(let r=0; r<8; r++) {
+            for(let f=0; f<8; f++) {
+                if (board[r][f]) {
+                    const sq = files[f] + (8-r);
+                    const colorPrefix = board[r][f].color === 'w' ? 'w_' : 'b_';
+                    const id = colorPrefix + board[r][f].type + '_' + sq;
+                    customBaseMap[sq] = id;
+                    globalPieceToggles[id] = true;
+                }
+            }
+        }
+    } else {
+        customBaseMap = null;
+        initToggles();
+    }
+    
+    orientation = chess.turn();
     lastMove = null;
     selectedSquare = null;
     forwardQueue = [];
     
-    // Attempt to reconstruct history marker if it was a PGN payload
     const history = chess.history({ verbose: true });
     if (history.length > 0) {
       lastMove = history[history.length - 1];
@@ -694,19 +710,6 @@ document.getElementById('mode-trivial')?.addEventListener('change', (e) => {
 
 document.getElementById('mode-skewers')?.addEventListener('change', (e) => {
     globalModeSkewers = e.target.checked;
-    renderBoard();
-});
-
-document.getElementById('status-indicator')?.addEventListener('click', () => {
-    const fen = chess.fen();
-    const parts = fen.split(' ');
-    parts[1] = parts[1] === 'w' ? 'b' : 'w';
-    parts[3] = '-'; // Disable transient en-passant on forced flip
-    
-    chess.load(parts.join(' '));
-    forwardQueue = [];
-    selectedSquare = null;
-    lastMove = null;
     renderBoard();
 });
 
