@@ -26,6 +26,7 @@ let globalPieceToggles = {};
 let globalTargetToggles = {};
 let globalModeWinning = true;
 let globalModeComprehensive = true;
+let globalModeSkewers = true;
 let globalModeTrivial = true;
 
 const initToggles = () => {
@@ -228,11 +229,70 @@ function getAttackedSquares(f, r, type, color, boardState) {
   return targets;
 }
 
+const pieceValues = { 'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 1000 };
+
+function checkPinStatus(boardState) {
+    let pinnedSquares = {};
+    const files = ['a','b','c','d','e','f','g','h'];
+    for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+            const pieceB = boardState[r][f];
+            if (!pieceB) continue;
+            
+            const colorB = pieceB.color;
+            const valB = pieceValues[pieceB.type];
+            let isPinned = false;
+            
+            const allDirs = [...dirs['r'], ...dirs['b']];
+            for (let d of allDirs) {
+                let hasEnemySlider = false;
+                let cf = f; let cr = r;
+                while (true) {
+                    cf += d[0]; cr += d[1];
+                    if (cf < 0 || cf > 7 || cr < 0 || cr > 7) break;
+                    const p = boardState[cr][cf];
+                    if (p) {
+                        if (p.color !== colorB) {
+                            if (p.type === 'q') hasEnemySlider = true;
+                            else if (p.type === 'r' && (d[0] === 0 || d[1] === 0)) hasEnemySlider = true;
+                            else if (p.type === 'b' && Math.abs(d[0]) === Math.abs(d[1])) hasEnemySlider = true;
+                        }
+                        break;
+                    }
+                }
+                
+                if (hasEnemySlider) {
+                    let opDr = [-d[0], -d[1]];
+                    let cf2 = f; let cr2 = r;
+                    while (true) {
+                        cf2 += opDr[0]; cr2 += opDr[1];
+                        if (cf2 < 0 || cf2 > 7 || cr2 < 0 || cr2 > 7) break;
+                        const p2 = boardState[cr2][cf2];
+                        if (p2) {
+                            if (p2.color === colorB && pieceValues[p2.type] > valB) {
+                                isPinned = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (isPinned) break;
+            }
+            if (isPinned) {
+                pinnedSquares[files[f] + (8 - r)] = true;
+            }
+        }
+    }
+    return pinnedSquares;
+}
+
 function calculateCoverage() {
   const coverage = { w: {}, b: {} };
   const boardState = chess.board(); 
   const files = ['a','b','c','d','e','f','g','h'];
   const map = getPieceTrackingMap();
+  
+  const pinnedSquares = globalModeSkewers ? checkPinStatus(boardState) : {};
   
   for (let r = 0; r < 8; r++) {
     for (let f = 0; f < 8; f++) {
@@ -243,6 +303,7 @@ function calculateCoverage() {
       const id = map[sq];
       
       if (!globalPieceToggles[id]) continue;
+      if (pinnedSquares[sq]) continue;
       
       const targets = getAttackedSquares(f, r, piece.type, piece.color, boardState);
       targets.forEach(t => {
@@ -617,6 +678,11 @@ document.getElementById('mode-comprehensive')?.addEventListener('change', (e) =>
 
 document.getElementById('mode-trivial')?.addEventListener('change', (e) => {
     globalModeTrivial = e.target.checked;
+    renderBoard();
+});
+
+document.getElementById('mode-skewers')?.addEventListener('change', (e) => {
+    globalModeSkewers = e.target.checked;
     renderBoard();
 });
 

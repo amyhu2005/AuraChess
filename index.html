@@ -92,6 +92,10 @@
             <span>Comprehensive X-Ray</span>
           </label>
           <label class="mode-toggle">
+            <input type="checkbox" id="mode-skewers" checked> 
+            <span>Filter Skewers / Pins</span>
+          </label>
+          <label class="mode-toggle">
             <input type="checkbox" id="mode-trivial" checked> 
             <span>Filter Trivial Dominance</span>
           </label>
@@ -123,9 +127,10 @@
           <li><strong>Winning Square Overlays:</strong> Evaluates total board control. Squares are softly highlighted with a translucent Blue overlay if White has more pieces covering them, or Red if Black has the numerical advantage. Ties remain naturally blank.</li>
         </ul>
 
-        <h3>Visualization Modes</h3>
+        <h3>Deep-Analysis Visualization Modes</h3>
         <ul>
           <li><strong>Comprehensive X-Ray:</strong> Visualizes true "battery" potential. Sliding pieces (Queens, Rooks, Bishops) will intelligently show their influence through blocking pieces that share the same trajectory. Friendly pawns also transmit battery support exactly one square forward to highlight potential capture protection.</li>
+          <li><strong>Filter Skewers / Pins:</strong> Dynamically calculates relative constraints! If a piece is pinned or skewered between an enemy attacker and a friendly piece of strictly HIGHER value (like a Knight trapped in front of a Queen), all of its coverage vectors are physically severed from the board math because moving it would be a blunder.</li>
           <li><strong>Filter Trivial Dominance:</strong> A smart filter designed to reduce visual noise. If a square is exclusively controlled by one player and completely uncontested, its overlays disappear so you can focus strictly on battlegrounds. <strong>Exception:</strong> If an undefended "hanging" piece sits on that square, it remains highlighted to alert you of the tactical opportunity or blunder!</li>
         </ul>
 
