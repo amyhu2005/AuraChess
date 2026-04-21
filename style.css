@@ -558,6 +558,20 @@ body {
   margin-bottom: 1rem;
 }
 
+#status-indicator {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+#status-indicator:hover {
+  filter: brightness(1.2);
+}
+
+#status-indicator:active {
+  transform: scale(0.97);
+}
+
 /* Responsive adjustments */
 @media (max-width: 800px) {
   .app-container {

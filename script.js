@@ -588,16 +588,27 @@ document.getElementById('reset-board-btn').addEventListener('click', () => {
 
 document.getElementById('import-btn')?.addEventListener('click', () => {
   const inputEl = document.getElementById('import-input');
-  const val = inputEl.value.trim();
+  let val = inputEl.value.trim();
+  const rawOriginal = val;
   if (!val) return;
 
   let success = false;
+  
+  if (!val.includes('[') && !val.includes('1.')) {
+      const parts = val.split(/\s+/);
+      if (parts.length === 1) val += ' w KQkq - 0 1';
+      else if (parts.length === 2) val += ' KQkq - 0 1';
+      else if (parts.length === 3) val += ' - 0 1';
+      else if (parts.length === 4) val += ' 0 1';
+      else if (parts.length === 5) val += ' 1';
+  }
+
   // Try mapping as FEN first
   if (chess.load(val)) {
     success = true;
   } else {
     // Try mapping as PGN
-    if (chess.load_pgn(val)) {
+    if (chess.load_pgn(rawOriginal) || chess.load_pgn(val)) {
       success = true;
     }
   }
@@ -683,6 +694,19 @@ document.getElementById('mode-trivial')?.addEventListener('change', (e) => {
 
 document.getElementById('mode-skewers')?.addEventListener('change', (e) => {
     globalModeSkewers = e.target.checked;
+    renderBoard();
+});
+
+document.getElementById('status-indicator')?.addEventListener('click', () => {
+    const fen = chess.fen();
+    const parts = fen.split(' ');
+    parts[1] = parts[1] === 'w' ? 'b' : 'w';
+    parts[3] = '-'; // Disable transient en-passant on forced flip
+    
+    chess.load(parts.join(' '));
+    forwardQueue = [];
+    selectedSquare = null;
+    lastMove = null;
     renderBoard();
 });
 
